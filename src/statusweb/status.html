@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>E5372 LTE Status</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  padding:16px;
+  background:#0b0d0e;
+  color:#e7e7e7;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+}
+
+.container{
+  max-width:1000px;
+  margin:auto;
+}
+
+h1{
+  margin:0 0 4px;
+  font-size:28px;
+  font-weight:600;
+}
+
+.subtitle{
+  color:#80868b;
+  font-size:13px;
+  margin-bottom:18px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.card{
+  background:#17191a;
+  border:1px solid #2d3032;
+  border-radius:12px;
+  padding:14px 16px;
+}
+
+.card-title{
+  color:#60aef0;
+  font-size:13px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.7px;
+  margin-bottom:6px;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:18px;
+  padding:9px 0;
+  border-bottom:1px solid #272a2c;
+}
+
+.row:last-child{
+  border-bottom:0;
+}
+
+.name{
+  min-width:0;
+}
+
+.label{
+  font-size:14px;
+  color:#c8cbcd;
+}
+
+.desc{
+  font-size:10px;
+  color:#6f7579;
+  margin-top:2px;
+  line-height:1.25;
+}
+
+.value{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:13px;
+  white-space:nowrap;
+  text-align:right;
+}
+
+.good{color:#63dd82}
+.medium{color:#e5b94f}
+.bad{color:#ef6b6b}
+
+.speed{
+  font-size:15px;
+  font-weight:600;
+}
+
+#updated{
+  color:#5f6569;
+  font-size:11px;
+  text-align:right;
+  margin-top:12px;
+}
+
+@media(max-width:700px){
+  body{padding:12px}
+  h1{font-size:24px}
+  .grid{grid-template-columns:1fr}
+  .card{padding:12px 14px}
+  .label{font-size:13px}
+  .desc{font-size:9px}
+  .value{font-size:12px}
+}
+.diagbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:0 0 18px;padding:10px 12px;background:#111314;border:1px solid #292d2f;border-radius:9px}
+.diaglabel{font-size:12px;color:#777d81}
+.diagstate{font-size:12px;font-weight:600;margin-left:4px}
+.diagstate.active{color:#63dd82}
+.diagstate.stopped{color:#e5b94f}
+.diagstate.idle{color:#777d81}
+.diagtime{font-size:10px;color:#62686c;margin-top:3px}
+.diagbuttons{display:flex;gap:7px}
+.diagbuttons button{border:1px solid #34383b;border-radius:7px;background:#1b1e20;color:#d9dcde;padding:7px 11px;font-size:11px;cursor:pointer}
+.diagbuttons button:disabled{opacity:.35;cursor:default}
+@media(max-width:700px){.diagbar{align-items:flex-start;flex-direction:column}.diagbuttons{width:100%}.diagbuttons button{flex:1}}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>E5372 LTE Status</h1>
+<div class="subtitle">Huawei E5372 / zoid patch, powered by ValdikSS firmware</div>
+<div class="diagbar">
+  <div>
+    <span class="diaglabel">&#1044;&#1080;&#1072;&#1075;&#1085;&#1086;&#1089;&#1090;&#1080;&#1082;&#1072;:</span>
+    <span id="diagstate" class="diagstate idle">&#1077;&#1097;&#1105; &#1085;&#1077; &#1079;&#1072;&#1087;&#1091;&#1089;&#1082;&#1072;&#1083;&#1072;&#1089;&#1100;</span>
+    <div id="diagtime" class="diagtime">&#1044;&#1072;&#1085;&#1085;&#1099;&#1077; &#1077;&#1097;&#1105; &#1085;&#1077; &#1087;&#1086;&#1083;&#1091;&#1095;&#1077;&#1085;&#1099;</div>
+  </div>
+  <div class="diagbuttons">
+    <button id="startdiag" onclick="startDiagnostics()">&#1047;&#1072;&#1087;&#1091;&#1089;&#1090;&#1080;&#1090;&#1100; &#1076;&#1080;&#1072;&#1075;&#1085;&#1086;&#1089;&#1090;&#1080;&#1082;&#1091;</button>
+    <button id="stopdiag" onclick="stopDiagnostics()" disabled>&#1054;&#1089;&#1090;&#1072;&#1085;&#1086;&#1074;&#1080;&#1090;&#1100;</button>
+  </div>
+</div>
+
+<div class="grid">
+
+<div class="card">
+<div class="card-title">LTE Radio</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">PCI</div>
+    <div class="desc">Физический идентификатор сектора соты</div>
+  </div>
+  <div id="pci" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">Cell ID</div>
+    <div class="desc">Идентификатор обслуживающей LTE-соты</div>
+  </div>
+  <div id="cell_id" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">RSSI</div>
+    <div class="desc">Общий уровень принятого радиосигнала</div>
+  </div>
+  <div id="rssi" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">RSRP</div>
+    <div class="desc">Мощность полезного LTE-сигнала</div>
+  </div>
+  <div id="rsrp" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">RSRQ</div>
+    <div class="desc">Качество принятого LTE-сигнала</div>
+  </div>
+  <div id="rsrq" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">SINR</div>
+    <div class="desc">Отношение сигнала к шуму и помехам</div>
+  </div>
+  <div id="sinr" class="value">...</div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-title">Мобильная сеть</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">Operator</div>
+    <div class="desc">Оператор мобильной сети</div>
+  </div>
+  <div id="operator" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">Technology</div>
+    <div class="desc">Текущий стандарт мобильной связи</div>
+  </div>
+  <div id="network" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">Allowed LTE bands</div>
+    <div class="desc">&#1056;&#1072;&#1079;&#1088;&#1077;&#1096;&#1105;&#1085;&#1085;&#1099;&#1077; &#1076;&#1080;&#1072;&#1087;&#1072;&#1079;&#1086;&#1085;&#1099; LTE</div>
+  </div>
+  <div id="lte_band" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">Connection</div>
+    <div class="desc">Состояние интернет-соединения</div>
+  </div>
+  <div id="connection" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">SIM</div>
+    <div class="desc">Состояние SIM-карты</div>
+  </div>
+  <div id="sim" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">Roaming</div>
+    <div class="desc">Регистрация в роуминге</div>
+  </div>
+  <div id="roaming" class="value">...</div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-title">Интернет-сессия</div>
+
+<div class="row">
+  <div class="name"><div class="label">WAN IPv4</div></div>
+  <div id="wan_ip" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name"><div class="label">WAN IPv6</div></div>
+  <div id="wan_ipv6" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">Session time</div>
+    <div class="desc">Время текущего подключения</div>
+  </div>
+  <div id="session_time" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name"><div class="label">Download rate</div></div>
+  <div id="down_rate" class="value speed">...</div>
+</div>
+
+<div class="row">
+  <div class="name"><div class="label">Upload rate</div></div>
+  <div id="up_rate" class="value speed">...</div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">Downloaded</div>
+    <div class="desc">За текущую сессию</div>
+  </div>
+  <div id="session_down" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">Uploaded</div>
+    <div class="desc">За текущую сессию</div>
+  </div>
+  <div id="session_up" class="value">...</div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-title">DNS / PRIVACY</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">DNS over TLS</div>
+    <div class="desc">Шифрование DNS-запросов</div>
+  </div>
+  <div id="dns_dot" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">DNS profile</div>
+    <div class="desc">Активный DNS-провайдер</div>
+  </div>
+  <div id="dns_profile" class="value">...</div>
+</div>
+<div class="row">
+  <div class="name">
+    <div class="label">DoT upstreams</div>
+    <div class="desc">&#1040;&#1082;&#1090;&#1080;&#1074;&#1085;&#1099;&#1077; DNS-&#1089;&#1077;&#1088;&#1074;&#1077;&#1088;&#1099;</div>
+  </div>
+  <div id="dns_upstreams" class="value">...</div>
+</div>
+
+
+<div class="row">
+  <div class="name"><div class="label">AdBlock</div></div>
+  <div id="dns_adblock" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name"><div class="label">Stubby</div></div>
+  <div id="dns_stubby" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name"><div class="label">Anticensorship</div></div>
+  <div id="dns_anticensorship" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">DNS server</div>
+    <div class="desc">Выбор DNS-профиля</div>
+  </div>
+  <div class="value">
+    <select id="dns_profile_select">
+      <option value="yandex">Yandex</option>
+      <option value="quad9">Quad9</option>
+      <option value="cloudflare">Cloudflare</option>
+      <option value="google">Google</option>
+      <option value="adguard">AdGuard</option>
+      <option value="sinodun">Sinodun</option>
+      <option value="getdns">GetDNS</option>
+      <option value="censurfridns">Censurfridns</option>
+      <option value="restena">Restena</option>
+      <option value="cmrg">CMRG</option>
+      <option value="securedns">SecureDNS.eu</option>
+      <option value="bitwiseshift">BitwiseShift</option>
+      <option value="dnsprivacy">DNSPrivacy.at</option>
+      <option value="bitgeek">Bitgeek</option>
+      <option value="neutopia">Neutopia</option>
+      <option value="appliedprivacy">Applied Privacy</option>
+      <option value="operator">Operator DNS</option>
+    </select>
+  </div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">AdBlock</div>
+    <div class="desc">Фильтрация рекламы через DNS</div>
+  </div>
+  <div class="value">
+    <select id="dns_adblock_select">
+      <option value="0">Off</option>
+      <option value="1">On (high memory usage)</option>
+    </select>
+  </div>
+</div>
+
+<div style="text-align:right;margin-top:14px">
+  <button id="dns_apply" type="button">Применить</button>
+  <div id="dns_apply_status" style="margin-top:8px;font-size:11px;color:#6f777d;"></div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-title">Роутер</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">Battery</div>
+    <div class="desc">Уровень заряда аккумулятора</div>
+  </div>
+  <div id="battery" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">Wi-Fi clients</div>
+    <div class="desc">Подключено / максимум</div>
+  </div>
+  <div id="wifi" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">Uptime</div>
+    <div class="desc">Время работы после загрузки</div>
+  </div>
+  <div id="uptime" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name"><div class="label">Primary DNS</div></div>
+  <div id="dns1" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name"><div class="label">Secondary DNS</div></div>
+  <div id="dns2" class="value">...</div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-title">Трафик за месяц</div>
+
+<div class="row">
+  <div class="name"><div class="label">Downloaded</div></div>
+  <div id="month_down" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name"><div class="label">Uploaded</div></div>
+  <div id="month_up" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">Connection time</div>
+    <div class="desc">Общее время подключения за период</div>
+  </div>
+  <div id="month_time" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name">
+    <div class="label">Statistics since</div>
+    <div class="desc">Начало текущего периода статистики</div>
+  </div>
+  <div id="month_clear" class="value">...</div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-title">Система</div>
+
+<div class="row">
+  <div class="name"><div class="label">Firmware</div></div>
+  <div id="firmware" class="value">...</div>
+</div>
+
+<div class="row">
+  <div class="name"><div class="label">WebUI</div></div>
+  <div id="webui" class="value">...</div>
+</div>
+</div>
+
+</div>
+
+</div>
+
+<script>
+var networks = {
+  "1":"GSM",
+  "2":"GPRS",
+  "3":"EDGE",
+  "41":"WCDMA",
+  "42":"HSDPA",
+  "43":"HSUPA",
+  "44":"HSPA",
+  "45":"HSPA+",
+  "46":"DC-HSPA+",
+  "101":"LTE"
+};
+
+function put(id,v,s){
+  var e=document.getElementById(id);
+  if(!e) return;
+
+  if(s===undefined) s="";
+
+  if(v===null || v===undefined || v===""){
+    e.textContent="N/A";
+  }else{
+    e.textContent=String(v)+s;
+  }
+}
+
+function bytes(v,rate){
+  var n=Number(v);
+
+  if(!isFinite(n)) return "N/A";
+
+  var u=["B","KB","MB","GB","TB"];
+  var i=0;
+
+  while(n>=1024 && i<u.length-1){
+    n=n/1024;
+    i++;
+  }
+
+  return n.toFixed(i ? 2 : 0)+" "+u[i]+(rate ? "/s" : "");
+}
+
+function duration(v){
+  var s=Number(v);
+
+  if(!isFinite(s)) return "N/A";
+
+  var d=Math.floor(s/86400);
+  s=s%86400;
+
+  var h=Math.floor(s/3600);
+  s=s%3600;
+
+  var m=Math.floor(s/60);
+  var sec=Math.floor(s%60);
+
+  var r="";
+
+  if(d) r+=d+"d ";
+  if(h || d) r+=h+"h ";
+  if(m || h || d) r+=m+"m ";
+
+  return r+sec+"s";
+}
+
+function color(id,state){
+  var e=document.getElementById(id);
+  if(!e) return;
+
+  e.classList.remove("good","medium","bad");
+
+  if(state){
+    e.classList.add(state);
+  }
+}
+
+function setRadioQuality(id,v,type){
+  var n=parseFloat(v);
+
+  if(isNaN(n)){
+    color(id,"");
+    return;
+  }
+
+  if(type==="rssi"){
+    if(n>=-65) color(id,"good");
+    else if(n>=-80) color(id,"medium");
+    else color(id,"bad");
+  }
+
+  if(type==="rsrp"){
+    if(n>=-85) color(id,"good");
+    else if(n>=-100) color(id,"medium");
+    else color(id,"bad");
+  }
+
+  if(type==="rsrq"){
+    if(n>=-10) color(id,"good");
+    else if(n>=-15) color(id,"medium");
+    else color(id,"bad");
+  }
+
+  if(type==="sinr"){
+    if(n>=15) color(id,"good");
+    else if(n>=5) color(id,"medium");
+    else color(id,"bad");
+  }
+}
+
+function setStateColors(d){
+  if(d.connection==="901"){
+    color("connection","good");
+  }else{
+    color("connection","bad");
+  }
+
+  if(d.sim_status==="1"){
+    color("sim","good");
+  }else{
+    color("sim","bad");
+  }
+
+  if(d.roaming==="0"){
+    color("roaming","good");
+  }else{
+    color("roaming","medium");
+  }
+
+  var b=parseFloat(d.battery);
+
+  if(!isNaN(b)){
+    if(b>=50) color("battery","good");
+    else if(b>=20) color("battery","medium");
+    else color("battery","bad");
+  }
+
+  setRadioQuality("rssi",d.rssi,"rssi");
+  setRadioQuality("rsrp",d.rsrp,"rsrp");
+  setRadioQuality("rsrq",d.rsrq,"rsrq");
+  setRadioQuality("sinr",d.sinr,"sinr");
+}
+
+function decodeLTEBands(mask){
+  if(!mask) return "N/A";
+  var n=parseInt(mask,16);
+  if(!isFinite(n)) return mask;
+  var bands=[];
+  for(var b=1;b<=32;b++){
+    if(Math.floor(n/Math.pow(2,b-1))%2===1){
+      bands.push("B"+b);
+    }
+  }
+  return bands.length ? bands.join(" / ") : mask;
+}
+
+function dnsProfileName(v){
+  var m={
+    yandex:"Yandex",
+    quad9:"Quad9",
+    cloudflare:"Cloudflare",
+    google:"Google",
+    adguard:"AdGuard",
+    sinodun:"Sinodun",
+    getdns:"GetDNS",
+    censurfridns:"Censurfridns",
+    restena:"Restena",
+    cmrg:"CMRG",
+    securedns:"SecureDNS.eu",
+    bitwiseshift:"BitwiseShift",
+    dnsprivacy:"DNSPrivacy.at",
+    bitgeek:"Bitgeek",
+    neutopia:"Neutopia",
+    appliedprivacy:"Applied Privacy",
+    operator:"Operator DNS",
+    stock:"Stock"
+  };
+  return m[v] || v;
+}
+
+function dnsUpstreams(v){
+  var m={
+    yandex:"77.88.8.8",
+    quad9:"9.9.9.9 / 9.9.9.10",
+    cloudflare:"1.1.1.1 / 1.0.0.1",
+    google:"8.8.8.8 / 8.8.4.4",
+    adguard:"176.103.130.130 / 176.103.130.131",
+    sinodun:"145.100.185.15 / 145.100.185.16",
+    getdns:"185.49.141.37",
+    censurfridns:"89.233.43.71",
+    restena:"158.64.1.29",
+    cmrg:"199.58.81.218",
+    securedns:"146.185.167.43",
+    bitwiseshift:"81.187.221.24",
+    dnsprivacy:"94.130.110.185 / 94.130.110.178",
+    bitgeek:"139.59.51.46",
+    neutopia:"89.234.186.112",
+    appliedprivacy:"37.252.185.232",
+    operator:"Operator assigned"
+  };
+  return m[v] || "N/A";
+}
+
+function update(){
+  fetch("/cgi-bin/status.cgi?t="+new Date().getTime(),{
+    cache:"no-store"
+  })
+  .then(function(r){
+    if(!r.ok){
+      throw new Error("HTTP "+r.status);
+    }
+    return r.json();
+  })
+  .then(function(d){
+
+    var op=d.operator_name || "";
+
+    if(d.operator){
+      if(op){
+        op+=" ("+d.operator+")";
+      }else{
+        op=d.operator;
+      }
+    }
+
+    put("operator",op);
+    put("network",networks[d.network] || d.network);
+    put("lte_band",decodeLTEBands(d.lte_band));
+    put("dns_dot",(d.dns_dot==="1" || d.dns_dot==="2") ? "Enabled" : "Disabled");
+    put("dns_profile",dnsProfileName(d.dns_profile));
+    put("dns_upstreams",dnsUpstreams(d.dns_profile));
+    put("dns_adblock",d.dns_adblock==="1" ? "Enabled" : "Disabled");
+    put("dns_stubby",d.dns_stubby==="running" ? "Running" : "Stopped");
+    put("dns_anticensorship",d.dns_anticensorship==="1" ? "Enabled" : "Disabled");
+
+    var dotEl=document.getElementById("dns_dot");
+    if(dotEl) dotEl.className="value "+((d.dns_dot==="1" || d.dns_dot==="2") ? "good" : "");
+
+    var stubbyEl=document.getElementById("dns_stubby");
+    if(stubbyEl) stubbyEl.className="value "+(d.dns_stubby==="running" ? "good" : "bad");
+
+    var adEl=document.getElementById("dns_adblock");
+    if(adEl) adEl.className="value "+(d.dns_adblock==="1" ? "good" : "");
+
+    var antiEl=document.getElementById("dns_anticensorship");
+    if(antiEl) antiEl.className="value "+(d.dns_anticensorship==="1" ? "good" : "");
+
+    var dnsSelect=document.getElementById("dns_profile_select");
+    if(dnsSelect && d.dns_profile) dnsSelect.value=d.dns_profile;
+
+    var adSelect=document.getElementById("dns_adblock_select");
+    if(adSelect) adSelect.value=d.dns_adblock==="1" ? "1" : "0";
+
+    if(d.connection==="901"){
+      put("connection","Connected");
+    }else{
+      put("connection",d.connection);
+    }
+
+    if(d.sim_status==="1"){
+      put("sim","Ready");
+    }else{
+      put("sim",d.sim_status);
+    }
+
+    if(d.roaming==="0"){
+      put("roaming","No");
+    }else{
+      put("roaming","Yes");
+    }
+
+    put("pci",d.pci);
+    put("cell_id",d.cell_id);
+
+    put("rssi",d.rssi);
+    put("rsrp",d.rsrp," dBm");
+    put("rsrq",d.rsrq," dB");
+    put("sinr",d.sinr," dB");
+
+    put("wan_ip",d.wan_ip);
+    put("wan_ipv6",d.wan_ipv6);
+
+    put("session_time",duration(d.session_time));
+    put("down_rate",bytes(d.down_rate,true));
+    put("up_rate",bytes(d.up_rate,true));
+    put("session_down",bytes(d.session_down,false));
+    put("session_up",bytes(d.session_up,false));
+
+    put("battery",d.battery,"%");
+
+    if(d.wifi_users!=="" && d.wifi_max!==""){
+      put("wifi",d.wifi_users+" / "+d.wifi_max);
+    }else{
+      put("wifi","N/A");
+    }
+
+    put("uptime",d.uptime);
+    put("dns1",d.dns1);
+    put("dns2",d.dns2);
+
+    put("month_down",bytes(d.month_down,false));
+    put("month_up",bytes(d.month_up,false));
+    put("month_time",duration(d.month_time));
+    put("month_clear",d.month_clear);
+
+    put("firmware",d.firmware);
+    put("webui",d.webui);
+
+    setStateColors(d);
+
+    lastDataTime=new Date();
+    var diagtime=document.getElementById("diagtime");
+    if(diagtime){
+      diagtime.textContent="\u041f\u043e\u0441\u043b\u0435\u0434\u043d\u0438\u0435 \u0434\u0430\u043d\u043d\u044b\u0435: "+dateTime(lastDataTime);
+    }
+  })
+  .catch(function(e){
+    var updated=document.getElementById("updated");
+
+    if(updated){
+      updated.textContent=
+        "Update failed: "+e.message;
+      updated.className="bad";
+    }
+  });
+}
+
+
+var refreshTimer=null;
+var lastDataTime=null;
+var diagnosticsActive=false;
+var normalInterval=60000;
+var diagnosticInterval=3000;
+
+function dateTime(d){
+  var p=function(n){return n<10?"0"+n:n;};
+  return p(d.getDate())+"."+p(d.getMonth()+1)+"."+d.getFullYear()+" "+p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds());
+}
+
+function scheduleRefresh(interval){
+  if(refreshTimer!==null){
+    clearInterval(refreshTimer);
+  }
+  refreshTimer=setInterval(update,interval);
+}
+
+function startDiagnostics(){
+  diagnosticsActive=true;
+  var state=document.getElementById("diagstate");
+  var time=document.getElementById("diagtime");
+  state.textContent="\u0410\u043a\u0442\u0438\u0432\u043d\u0430";
+  state.className="diagstate active";
+  time.textContent="\u041e\u0436\u0438\u0434\u0430\u043d\u0438\u0435 \u0434\u0430\u043d\u043d\u044b\u0445...";
+  document.getElementById("startdiag").disabled=true;
+  document.getElementById("stopdiag").disabled=false;
+  update();
+  scheduleRefresh(diagnosticInterval);
+}
+
+function stopDiagnostics(){
+  diagnosticsActive=false;
+  var state=document.getElementById("diagstate");
+  var time=document.getElementById("diagtime");
+  state.textContent="\u041e\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u0430";
+  state.className="diagstate stopped";
+  if(lastDataTime){
+    time.textContent="\u041f\u043e\u0441\u043b\u0435\u0434\u043d\u0438\u0435 \u0434\u0430\u043d\u043d\u044b\u0435: "+dateTime(lastDataTime);
+  }else{
+    time.textContent="\u0414\u0430\u043d\u043d\u044b\u0435 \u0435\u0449\u0451 \u043d\u0435 \u043f\u043e\u043b\u0443\u0447\u0435\u043d\u044b";
+  }
+  document.getElementById("startdiag").disabled=false;
+  document.getElementById("stopdiag").disabled=true;
+  scheduleRefresh(normalInterval);
+}
+
+update();
+scheduleRefresh(normalInterval);
+
+function syncDNSControls(){
+  var p=document.getElementById("dns_profile_select");
+  var a=document.getElementById("dns_adblock_select");
+  if(!p || !a) return;
+  if(p.value==="operator"){
+    a.value="0";
+    a.disabled=true;
+  }else{
+    a.disabled=false;
+  }
+}
+
+
+function applyDNS(){
+  var profile=document.getElementById("dns_profile_select").value;
+  var adblock=document.getElementById("dns_adblock_select").value;
+  var button=document.getElementById("dns_apply");
+
+  button.disabled=true;
+  var st=document.getElementById("dns_apply_status");
+  if(st){ st.textContent="Applying..."; st.style.color="#6f777d"; }
+  button.textContent="Applying...";
+
+  fetch("/cgi-bin/dns.cgi?profile="+encodeURIComponent(profile)+"&adblock="+encodeURIComponent(adblock),{cache:"no-store"})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(!d.ok) throw new Error(d.error || "DNS apply failed");
+    return update();
+  })
+  .then(function(){
+    button.textContent="Applied";
+    if(profile==="operator"){
+      if(st){
+        st.innerHTML="Applied successfully<br>Operator DNS active";
+        st.style.color="#63dd82";
+      }
+      return null;
+    }
+    return new Promise(function(resolve){
+      setTimeout(function(){
+        fetch("/cgi-bin/dotcheck.cgi?t="+Date.now(),{cache:"no-store"})
+          .then(function(r){return r.json();})
+          .then(resolve);
+      },12000);
+    });
+  })
+  .then(function(dot){
+    if(dot){
+      if(st){
+        if(dot.established){
+          st.innerHTML="Applied successfully<br>DoT connection established";
+          st.style.color="#63dd82";
+        }else{
+          st.innerHTML="Applied successfully<br>DoT connection not confirmed";
+          st.style.color="#ff6b6b";
+        }
+      }
+    }
+    setTimeout(function(){
+      button.textContent="\u041f\u0440\u0438\u043c\u0435\u043d\u0438\u0442\u044c";
+      button.disabled=false;
+    },1500);
+  })
+  .catch(function(e){
+    button.textContent="Error";
+    if(st){ st.textContent="Error: "+e.message; st.style.color="#ff6b6b"; }
+    button.disabled=false;
+    alert("DNS: "+e.message);
+  });
+}
+
+document.getElementById("dns_profile_select").onchange=syncDNSControls;
+syncDNSControls();
+
+document.getElementById("dns_apply").onclick=applyDNS;
+
+</script>
+
+</body>
+</html>
