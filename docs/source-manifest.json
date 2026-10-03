@@ -1,0 +1,145 @@
+{
+  "snapshot_date": "2026-10-04",
+  "timezone": "Europe/Moscow",
+  "firmware_mod": "ValdikSS v1.5.2",
+  "webui": "17.100.19.01.03",
+  "busybox": "1.29.3",
+  "architecture": "armv7l",
+  "raw_custom_files": [
+    {
+      "repository_path": "src/statusweb/cgi-bin/dns.cgi",
+      "device_path": "/data/userdata/statusweb/cgi-bin/dns.cgi",
+      "sha256": "dc123b9bda6a7be0c8eabff0044876c0fe881408d0d76030870e748d1a64bfc0",
+      "bytes": 2062,
+      "transfer": "byte-for-byte; SHA-256 verified against device"
+    },
+    {
+      "repository_path": "src/statusweb/cgi-bin/dotcheck.cgi",
+      "device_path": "/data/userdata/statusweb/cgi-bin/dotcheck.cgi",
+      "sha256": "57bbca3412ee2ba675f5f7d1daa4fd9d6ca92f0d4209765f18a8d7b70e9f3823",
+      "bytes": 714,
+      "transfer": "byte-for-byte; SHA-256 verified against device"
+    },
+    {
+      "repository_path": "src/statusweb/cgi-bin/status.cgi",
+      "device_path": "/data/userdata/statusweb/cgi-bin/status.cgi",
+      "sha256": "7dc99ff2ae3e99453f432a765fc9139e6995982cc33fc50a6b79917ef0688c09",
+      "bytes": 5251,
+      "transfer": "byte-for-byte; SHA-256 verified against device"
+    },
+    {
+      "repository_path": "src/statusweb/status.html",
+      "device_path": "/data/userdata/statusweb/status.html",
+      "sha256": "b55ecb3bf80e4005df1a8ec4d72cdfda66c74f914580df214815d05bb5e07dc8",
+      "bytes": 24243,
+      "transfer": "byte-for-byte; SHA-256 verified against device"
+    },
+    {
+      "repository_path": "src/statusweb/watchdog.sh",
+      "device_path": "/data/userdata/statusweb/watchdog.sh",
+      "sha256": "50e6448086d40000737821a0e0ee71e365e4dc769637b3beb53950df8620664d",
+      "bytes": 1320,
+      "transfer": "byte-for-byte; SHA-256 verified against device"
+    },
+    {
+      "repository_path": "src/zoid-dns/adblock",
+      "device_path": "/data/userdata/zoid-dns/adblock",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2,
+      "transfer": "byte-for-byte; SHA-256 verified against device"
+    },
+    {
+      "repository_path": "src/zoid-dns/dns_autorun.sh",
+      "device_path": "/data/userdata/zoid-dns/dns_autorun.sh",
+      "sha256": "4e3f8464f335d38b10e44f6af42655936ce13ee6346021a18ddc90f303df403b",
+      "bytes": 1099,
+      "transfer": "byte-for-byte; SHA-256 verified against device"
+    },
+    {
+      "repository_path": "src/zoid-dns/dns_profile.sh",
+      "device_path": "/data/userdata/zoid-dns/dns_profile.sh",
+      "sha256": "334cf10072c457b2560364947a5a8389dfd173c18e90e6b3e026cd60f2b8da38",
+      "bytes": 3328,
+      "transfer": "byte-for-byte; SHA-256 verified against device"
+    },
+    {
+      "repository_path": "src/zoid-dns/profile",
+      "device_path": "/data/userdata/zoid-dns/profile",
+      "sha256": "c537be4866987447097797a10e4c836396fc2ecb4b97275abf24b1362e41dffc",
+      "bytes": 7,
+      "transfer": "byte-for-byte; SHA-256 verified against device"
+    },
+    {
+      "repository_path": "src/zoid-dns/profiles",
+      "device_path": "/data/userdata/zoid-dns/profiles",
+      "sha256": "cec7958c1ddfa12b4b77c3462e0347ebee9ce45dad974b951548e781f1b74ef2",
+      "bytes": 894,
+      "transfer": "byte-for-byte; SHA-256 verified against device"
+    },
+    {
+      "repository_path": "src/zoid-dns/stubby.original.yml",
+      "device_path": "/data/userdata/zoid-dns/stubby.original.yml",
+      "sha256": "d070732140bc30d6ac2162140029094909fcae438a516cebe4a8c967ff6c6d18",
+      "bytes": 23142,
+      "transfer": "byte-for-byte; SHA-256 verified against device"
+    },
+    {
+      "repository_path": "src/zoid-dns/stubby.yml",
+      "device_path": "/data/userdata/zoid-dns/stubby.yml",
+      "sha256": "8655c12b1c309bf69ef2adb860af147aae142d380abde968fa9b1f004d936658",
+      "bytes": 9653,
+      "transfer": "byte-for-byte; SHA-256 verified against device"
+    }
+  ],
+  "integration_sources": [
+    {
+      "device_path": "/app/bin/oled_hijack/autorun.sh",
+      "repository_path": "integration/oled-autorun.append.sh",
+      "device_sha256": "9fe40632953363d6140d7c5d95c7786f57908ea677d7037d3777ba185217d231",
+      "representation": "custom appended fragment only; LF"
+    },
+    {
+      "device_path": "/app/webroot/WebApp/common/html/deviceinformation.html.gz",
+      "repository_path": "integration/deviceinformation-button.html",
+      "device_sha256": "d7fee10ad4ef666e4f2f8aff0a66aca7db98f63170eb8327c0e902c060ed5d94",
+      "representation": "custom script block from decompressed page; LF"
+    }
+  ],
+  "firmware_base": "21.290.23.00.00 (AT+CGMR)",
+  "model": "E5372 (AT+CGMM; hardware suffix not determined)",
+  "state_files": [
+    {
+      "repository_path": "config/device-state/dns_over_tls",
+      "device_path": "/data/userdata/dns_over_tls",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2,
+      "purpose": "read-only snapshot; not installed automatically"
+    },
+    {
+      "repository_path": "config/device-state/fix_ttl",
+      "device_path": "/data/userdata/fix_ttl",
+      "sha256": "913f5d1da2feaf4deeccc9e55cbb350a20f12b3f507e87be85dbb77fdd3cb9bc",
+      "bytes": 3,
+      "purpose": "read-only snapshot; not installed automatically"
+    },
+    {
+      "repository_path": "config/device-state/anticensorship",
+      "device_path": "/data/userdata/anticensorship",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "purpose": "read-only snapshot; not installed automatically"
+    }
+  ],
+  "firmware_reference_files": [
+    {
+      "repository_path": "config/firmware-reference/dnsmasq.conf",
+      "device_path": "/system/etc/dnsmasq.conf",
+      "sha256": "d91e0f455e94cc80179284634bcd1487a8561f3d1c3bbbb89878bc778106defb"
+    },
+    {
+      "repository_path": "config/firmware-reference/dnsmasq-adblock.conf",
+      "device_path": "/system/etc/dnsmasq-adblock.conf",
+      "sha256": "7a495e81ea5b3d02ae26bb7b59929be20e79189400d94bd2c9501d4f144fa98b"
+    }
+  ]
+}
