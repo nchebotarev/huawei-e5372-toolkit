@@ -1,0 +1,17 @@
+yandex|Yandex|77.88.8.8|common.dot.dns.yandex.net
+quad9|Quad9|9.9.9.9,9.9.9.10|dns.quad9.net
+cloudflare|Cloudflare|1.1.1.1,1.0.0.1|cloudflare-dns.com
+google|Google|8.8.8.8,8.8.4.4|dns.google
+adguard|AdGuard|176.103.130.130,176.103.130.131|dns.adguard.com
+sinodun|Sinodun|145.100.185.15,145.100.185.16|dnsovertls.sinodun.com
+getdns|GetDNS|185.49.141.37|getdnsapi.net
+censurfridns|Censurfridns|89.233.43.71|unicast.censurfridns.dk
+restena|Restena|158.64.1.29|kaitain.restena.lu
+cmrg|CMRG|199.58.81.218|dns.cmrg.net
+securedns|SecureDNS.eu|146.185.167.43|dot.securedns.eu
+bitwiseshift|BitwiseShift|81.187.221.24|dns-tls.bitwiseshift.net
+dnsprivacy|DNSPrivacy.at|94.130.110.185,94.130.110.178|ns1.dnsprivacy.at
+bitgeek|Bitgeek|139.59.51.46|dns.bitgeek.in
+neutopia|Neutopia|89.234.186.112|dns.neutopia.org
+appliedprivacy|Applied Privacy|37.252.185.232|dot1.appliedprivacy.net
+operator|Operator DNS||
